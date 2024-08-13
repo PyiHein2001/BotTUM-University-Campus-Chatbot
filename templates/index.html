@@ -1,0 +1,577 @@
+<!-- <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chatbot</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="chat-container">
+        <div class="chat-header">
+            UniChatBot
+        </div>
+        <div class="chat-messages" id="chat-messages">
+        </div>
+        <div class="chat-input">
+            <input type="text" id="user-input" placeholder="Type your message here..." onkeypress="handleKeyPress(event)">
+            <button onclick="sendMessage()">Send</button>
+        </div>
+    </div>
+
+    <script>
+        function sendMessage() {
+            const userInput = document.getElementById('user-input').value;
+            if (userInput.trim() === '') return;
+
+            const chatMessages = document.getElementById('chat-messages');
+            const userMessageDiv = document.createElement('div');
+            userMessageDiv.className = 'chat-message user-message';
+            userMessageDiv.textContent = userInput;
+            chatMessages.appendChild(userMessageDiv);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+
+            console.log("Sending message to server:", userInput);
+
+            const typingIndicator = document.createElement('div');
+            typingIndicator.className = 'chat-message bot-message typing';
+            typingIndicator.textContent = 'Bot is typing...';
+            chatMessages.appendChild(typingIndicator);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+
+            fetch('/chat', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ message: userInput }),
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(data => {
+                console.log("Received response from server:", data);
+
+                chatMessages.removeChild(typingIndicator);
+
+                const botMessageDiv = document.createElement('div');
+                botMessageDiv.className = 'chat-message bot-message';
+                chatMessages.appendChild(botMessageDiv);
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+
+                let i = 0;
+                function typeWriter() {
+                    if (i < data.response.length) {
+                        botMessageDiv.textContent += data.response.charAt(i);
+                        i++;
+                        setTimeout(typeWriter, 50);
+                    } else {
+                        const feedbackButton = createFeedbackButton(data.intent, data.message_id);
+                        botMessageDiv.appendChild(feedbackButton);
+                        chatMessages.scrollTop = chatMessages.scrollHeight;
+                    }
+                }
+                typeWriter();
+            })
+            .catch(error => {
+                console.error("Error in fetch request:", error);
+                chatMessages.removeChild(typingIndicator);
+            });
+
+            document.getElementById('user-input').value = '';
+        }
+
+        function createFeedbackButton(intent, messageId) {
+            const feedbackDiv = document.createElement('div');
+            feedbackDiv.className = 'feedback-container';
+            feedbackDiv.innerHTML = `
+                <button class="feedback-button" onclick="toggleFeedback(this, '${intent}', '${messageId}')">+</button>
+                <div class="thumb-buttons" style="display: none;">
+                    <button class="thumb-button" onclick="sendFeedback(this, 'up', '${intent}', '${messageId}')">👍</button>
+                    <button class="thumb-button" onclick="sendFeedback(this, 'down', '${intent}', '${messageId}')">👎</button>
+                </div>
+            `;
+            return feedbackDiv;
+        }
+
+        function toggleFeedback(button, intent, messageId) {
+            const thumbButtons = button.nextElementSibling;
+            if (thumbButtons.style.display === 'none') {
+                thumbButtons.style.display = 'flex';
+            } else {
+                thumbButtons.style.display = 'none';
+            }
+        }
+
+        function sendFeedback(button, feedback, intent, messageId) {
+            console.log(`Feedback: ${feedback}, Intent: ${intent}, Message ID: ${messageId}`);
+            fetch('/feedback', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ feedback: feedback, intent: intent, id: messageId }),
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(data => {
+                console.log("Feedback received by server:", data);
+                const feedbackContainer = button.closest('.feedback-container');
+                const feedbackButton = feedbackContainer.querySelector('.feedback-button');
+                feedbackButton.textContent = feedback === 'up' ? '👍' : '👎';
+                feedbackButton.classList.add('selected-feedback');
+                feedbackContainer.querySelector('.thumb-buttons').style.display = 'none';
+            })
+            .catch(error => {
+                console.error("Error in feedback request:", error);
+            });
+        }
+
+        function handleKeyPress(event) {
+            if (event.key === 'Enter') {
+                sendMessage();
+            }
+        }
+    </script>
+</body>
+</html> -->
+
+
+<!-- <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chatbot</title>
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='img/BOTTUM.png') }}">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="chat-container">
+        <div class="chat-header">
+            UniChatBot
+        </div>
+        <div class="chat-messages" id="chat-messages">
+        </div>
+        <div class="chat-input">
+            <input type="text" id="user-input" placeholder="Type your message here..." onkeypress="handleKeyPress(event)">
+            <button onclick="sendMessage()">Send</button>
+        </div>
+    </div>
+
+    <script>
+        function sendMessage() {
+            const userInput = document.getElementById('user-input').value;
+            if (userInput.trim() === '') return;
+
+            const chatMessages = document.getElementById('chat-messages');
+            const userMessageDiv = document.createElement('div');
+            userMessageDiv.className = 'chat-message user-message';
+            userMessageDiv.textContent = userInput;
+            chatMessages.appendChild(userMessageDiv);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+
+            console.log("Sending message to server:", userInput);
+
+            const typingIndicator = document.createElement('div');
+            typingIndicator.className = 'chat-message bot-message typing';
+            typingIndicator.textContent = 'Bot is typing...';
+            chatMessages.appendChild(typingIndicator);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+
+            fetch('/chat', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ message: userInput }),
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(data => {
+                console.log("Received response from server:", data);
+
+                chatMessages.removeChild(typingIndicator);
+
+                const botMessageDiv = document.createElement('div');
+                botMessageDiv.className = 'chat-message bot-message';
+                botMessageDiv.id = `message-${data.message_id}`;
+                chatMessages.appendChild(botMessageDiv);
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+
+                let i = 0;
+                function typeWriter() {
+                    if (i < data.response.length) {
+                        botMessageDiv.textContent += data.response.charAt(i);
+                        i++;
+                        setTimeout(typeWriter, 50);
+                    } else {
+                        chatMessages.scrollTop = chatMessages.scrollHeight;
+                        const feedbackButton = createFeedbackButton(data.intent, data.message_id);
+                        botMessageDiv.appendChild(feedbackButton);
+                    }
+                }
+                typeWriter();
+            })
+            .catch(error => {
+                console.error("Error in fetch request:", error);
+                chatMessages.removeChild(typingIndicator);
+
+                const errorMessageDiv = document.createElement('div');
+                errorMessageDiv.className = 'chat-message error-message';
+                errorMessageDiv.textContent = 'Error: Unable to get response from server.';
+                chatMessages.appendChild(errorMessageDiv);
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+            });
+
+            document.getElementById('user-input').value = '';
+        }
+
+        function createFeedbackButton(intent, messageId) {
+            const feedbackDiv = document.createElement('div');
+            feedbackDiv.className = 'feedback-container';
+            feedbackDiv.innerHTML = `
+                <button class="feedback-button" onclick="toggleFeedback(this, '${intent}', '${messageId}')">+</button>
+                <div class="thumb-buttons" style="display: none;">
+                    <button class="thumb-button" onclick="sendFeedback(this, 'up', '${intent}', '${messageId}')">👍</button>
+                    <button class="thumb-button" onclick="sendFeedback(this, 'down', '${intent}', '${messageId}')">👎</button>
+                </div>
+            `;
+            return feedbackDiv;
+        }
+
+        function toggleFeedback(button, intent, messageId) {
+            const thumbButtons = button.nextElementSibling;
+            thumbButtons.style.display = thumbButtons.style.display === 'none' ? 'flex' : 'none';
+            button.textContent = thumbButtons.style.display === 'none' ? '+' : ' ';
+        }
+
+        function sendFeedback(button, feedback, intent, messageId) {
+            console.log(`Feedback: ${feedback}, Intent: ${intent}, Message ID: ${messageId}`);
+            fetch('/feedback', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ feedback: feedback, intent: intent, id: messageId }),
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(data => {
+                console.log("Feedback received by server:", data);
+                const feedbackContainer = button.closest('.feedback-container');
+                const feedbackButton = feedbackContainer.querySelector('.feedback-button');
+                feedbackButton.textContent = feedback === 'up' ? '👍' : '👎';
+                feedbackButton.classList.add('selected-feedback');
+                feedbackContainer.querySelector('.thumb-buttons').style.display = 'none';
+            })
+            .catch(error => {
+                console.error("Error in feedback request:", error);
+            });
+        }
+
+        function handleKeyPress(event) {
+            if (event.key === 'Enter') {
+                sendMessage();
+            }
+        }
+    </script>
+</body>
+</html> -->
+
+
+
+
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chatbot</title>
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='img/BOTTUM.png') }}">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <!--===== HEADER =====-->
+    <header class="l-header">
+        <nav class="nav bd-grid">
+            <div>
+                <a href="#home" class="nav__logo">BotTUM</a>
+            </div>
+
+            <div class="nav__menu" id="nav-menu">
+                <ul class="nav__list">
+                    <li class="nav__item"><a href="#home" class="nav__link">Home</a></li>
+                    <li class="nav__item"><a href="#about" class="nav__link">About</a></li>
+                    <li class="nav__item"><a href="#chatbot" class="nav__link">ChatBot</a></li>
+                    <li class="nav__item"><a href="#questions" class="nav__link">Questions</a></li>
+                    <li class="nav__item"><a href="http://127.0.0.1:5000/admin.html" class="nav__link">Login</a></li>
+
+                    
+                </ul>
+            </div>
+
+            <div class="nav__toggle" id="nav-toggle">
+                <i class='bx bx-menu'></i>
+            </div>
+        </nav>
+    </header>
+
+    <main class="l-main">
+
+        
+        <!--===== HOME =====-->
+        <section class="home  bd-grid" id="home">
+            <div class="home__data">
+                <h1 class="home__title">Hi,<br>I'am <span class="home__title-color">BotTUM </span><br> University ChatBot</h1>
+                <a href="#chatbot" class="button">Chat with Me</a>
+            </div>
+
+            
+            <div class="home__img">
+                <svg class="home__blob" viewBox="0 0 479 467" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+                    <mask id="mask0" mask-type="alpha">
+                        <path d="M9.19024 145.964C34.0253 76.5814 114.865 54.7299 184.111 29.4823C245.804 6.98884 311.86 -14.9503 370.735 14.143C431.207 44.026 467.948 107.508 477.191 174.311C485.897 237.229 454.931 294.377 416.506 344.954C373.74 401.245 326.068 462.801 255.442 466.189C179.416 469.835 111.552 422.137 65.1576 361.805C17.4835 299.81 -17.1617 219.583 9.19024 145.964Z"/>
+                    </mask>
+                    <g mask="url(#mask0)">
+                        <path d="M9.19024 145.964C34.0253 76.5814 114.865 54.7299 184.111 29.4823C245.804 6.98884 311.86 -14.9503 370.735 14.143C431.207 44.026 467.948 107.508 477.191 174.311C485.897 237.229 454.931 294.377 416.506 344.954C373.74 401.245 326.068 462.801 255.442 466.189C179.416 469.835 111.552 422.137 65.1576 361.805C17.4835 299.81 -17.1617 219.583 9.19024 145.964Z"/>
+                        <image class="home__blob-img" x="65" y="45" href="{{ url_for('static', filename='img/BOTTUM.png') }}"/>
+                    </g>
+                </svg>
+            </div>
+        </section>
+
+        <!--===== ABOUT =====-->
+        <section class="about section" id="about">
+            <h2 class="section-title">About</h2>
+
+            <div class="about__container bd-grid">
+                <div class="about__img">
+                    <video src="{{ url_for('static', filename='img/BotTUM.mov') }}" loop autoplay muted></video>
+                </div>
+
+                <div>
+                    <h2 class="about__subtitle">Your University Chatbot</h2>
+                    <p class="about__text">I'm BotTUM, your friendly and efficient virtual assistant here to help you navigate all aspects of university life. Whether you're a prospective student, current student, faculty member, or alumni, I'm here to provide you with quick and accurate information.</p>
+                </div>
+            </div>
+        </section>
+
+        <!--===== CHATBOT =====-->
+        <section class="chatbot section" id="chatbot">
+            <h2 class="section-title">ChatBot</h2>
+
+            <div class="chat-container">
+                <div class="chat-header" role="banner">
+                    Bot_TUM
+                </div>
+                <div class="chat-messages" id="chat-messages" role="log" aria-live="polite"></div>
+                <div class="chat-input" role="form">
+                    <input type="text" id="user-input" placeholder="Type your message here..." onkeypress="handleKeyPress(event)" aria-label="User message input">
+                    <button onclick="sendMessage()" aria-label="Send message">Send</button>
+                </div>
+            </div>
+        </section>
+
+        <!--===== Questions =====-->
+        <section class="skills section" id="questions">
+            <h2 class="section-title">Qusetions</h2>
+
+            <div class="skills__container bd-grid">
+                <div>
+                    <h2 class="skills__subtitle">ဘယ်လို မေးခွန်းတွေ မေးနိုင်လဲ</h2>
+                    <p class="skills__text">နည်းပညာတက္ကသိုလ် (မန္တလေး) နှင့် ပါတ်သတ် သော မေးခွန်းတွေ ကို မေးမြန်းနိုင်ပါတယ်။</p>
+                    <div class="skills__data">
+                        <div class="skills__names">
+                            <span class="skills__name">ကျောင်းမှာဘာမေဂျာတွေရှိလဲ။</span>
+                        </div>
+                    </div>
+                    <div class="skills__data">
+                        <div class="skills__names">
+                            <span class="skills__name">TUMရဲ့တည်နေရာကိုပြောပြပါ။</span>
+                        </div>
+                    </div>
+                    <div class="skills__data">
+                        <div class="skills__names">
+                            <span class="skills__name">နည်းပညာတက္ကသိုလ် (မန္တလေး)မှာစာကြည့်တိုက်ရှိလား။</span>
+                        </div>
+                    </div>
+                    <div class="skills__data">
+                        <div class="skills__names">
+                            <span class="skills__name">ကျောင်းလျှောက်ရင်ဘာတွေလိုအပ်လဲ။</span>
+                        </div>
+                    </div>
+                    <div>
+                        
+                    </div>
+                </div>
+
+            </div>
+        </section>
+    </main>
+
+    <!--===== FOOTER =====-->
+    <footer class="footer">
+        <p class="footer__title">BotTUM</p>
+        <p class="footer__copy">&#169; BotTUM. All rigths reserved</p>
+    </footer>
+
+
+    <!--===== SCROLL REVEAL =====-->
+    <script src="https://unpkg.com/scrollreveal"></script>
+
+    <!--===== MAIN JS =====-->
+    <script src="assets/js/main.js"></script>
+    
+    
+    <!-- Script starts here -->
+    <script>
+        function sanitizeInput(input) {
+            const div = document.createElement('div');
+            div.textContent = input;
+            return div.innerHTML;
+        }
+
+        function sendMessage() {
+            const userInput = document.getElementById('user-input').value;
+            if (userInput.trim() === '') return;
+
+            const chatMessages = document.getElementById('chat-messages');
+            const userMessageDiv = document.createElement('div');
+            userMessageDiv.className = 'chat-message user-message';
+            userMessageDiv.textContent = sanitizeInput(userInput);
+            chatMessages.appendChild(userMessageDiv);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+
+            console.log("Sending message to server:", userInput);
+
+            const typingIndicator = document.createElement('div');
+            typingIndicator.className = 'chat-message bot-message typing';
+            typingIndicator.textContent = 'Bot is typing...';
+            chatMessages.appendChild(typingIndicator);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+
+            fetch('/chat', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ message: userInput }),
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(data => {
+                console.log("Received response from server:", data);
+
+                chatMessages.removeChild(typingIndicator);
+
+                const botMessageDiv = document.createElement('div');
+                botMessageDiv.className = 'chat-message bot-message';
+                botMessageDiv.id = `message-${data.message_id}`;
+                chatMessages.appendChild(botMessageDiv);
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+
+                let i = 0;
+                function typeWriter() {
+                    if (i < data.response.length) {
+                        botMessageDiv.textContent += data.response.charAt(i);
+                        i++;
+                        setTimeout(typeWriter, 50);
+                    } else {
+                        chatMessages.scrollTop = chatMessages.scrollHeight;
+                        const feedbackButton = createFeedbackButton(data.intent, data.message_id);
+                        botMessageDiv.appendChild(feedbackButton);
+                    }
+                }
+                typeWriter();
+            })
+            .catch(error => {
+                console.error("Error in fetch request:", error);
+                chatMessages.removeChild(typingIndicator);
+
+                const errorMessageDiv = document.createElement('div');
+                errorMessageDiv.className = 'chat-message error-message';
+                errorMessageDiv.textContent = 'Error: Unable to get response from server.';
+                chatMessages.appendChild(errorMessageDiv);
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+            });
+
+            document.getElementById('user-input').value = '';
+        }
+
+        function createFeedbackButton(intent, messageId) {
+            const feedbackDiv = document.createElement('div');
+            feedbackDiv.className = 'feedback-container';
+            feedbackDiv.innerHTML = `
+                <button class="feedback-button" onclick="toggleFeedback(this, '${intent}', '${messageId}')" aria-label="Give feedback">+</button>
+                <div class="thumb-buttons" style="display: none;">
+                    <button class="thumb-button" onclick="sendFeedback(this, 'up', '${intent}', '${messageId}')" aria-label="Thumbs up">👍</button>
+                    <button class="thumb-button" onclick="sendFeedback(this, 'down', '${intent}', '${messageId}')" aria-label="Thumbs down">👎</button>
+                </div>
+            `;
+            return feedbackDiv;
+        }
+
+        function toggleFeedback(button, intent, messageId) {
+            const thumbButtons = button.nextElementSibling;
+            thumbButtons.style.display = thumbButtons.style.display === 'none' ? 'flex' : 'none';
+            button.textContent = thumbButtons.style.display === 'none' ? '+' : ' ';
+        }
+
+        function sendFeedback(button, feedback, intent, messageId) {
+            console.log(`Feedback: ${feedback}, Intent: ${intent}, Message ID: ${messageId}`);
+            fetch('/feedback', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ feedback: feedback, intent: intent, id: messageId }),
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(data => {
+                console.log("Feedback received by server:", data);
+                const feedbackContainer = button.closest('.feedback-container');
+                const feedbackButton = feedbackContainer.querySelector('.feedback-button');
+                feedbackButton.textContent = feedback === 'up' ? '👍' : '👎';
+                feedbackButton.classList.add('selected-feedback');
+                feedbackContainer.querySelector('.thumb-buttons').style.display = 'none';
+            })
+            .catch(error => {
+                console.error("Error in feedback request:", error);
+            });
+        }
+
+        function handleKeyPress(event) {
+            if (event.key === 'Enter') {
+                sendMessage();
+            }
+        }
+    </script>
+</body>
+</html>

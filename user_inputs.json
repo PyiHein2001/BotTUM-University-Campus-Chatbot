@@ -1,0 +1,186 @@
+{
+    "user_inputs": [
+        {
+            "id": "f8cd1809-f143-40f6-837c-8d7eb8dab8af",
+            "user_id": "anonymous",
+            "message": "Hi",
+            "predicted_intent": "greeting",
+            "feedback": "up"
+        },
+        {
+            "id": "26299f3c-3bad-42f9-ae34-035b1e28ed5e",
+            "user_id": "anonymous",
+            "message": "ကျောင်းလိပ်စာကိုပြောပြပါ",
+            "predicted_intent": "address",
+            "feedback": "up"
+        },
+        {
+            "id": "70066823-9288-4eda-b6f0-f3d5d6ecaf8b",
+            "user_id": "anonymous",
+            "message": "Hi",
+            "predicted_intent": "greeting",
+            "feedback": null
+        },
+        {
+            "id": "25835f86-9ee0-4337-a7c2-d154b49c6785",
+            "user_id": "anonymous",
+            "message": "TUMမှာဘာမေဂျာတွေရှိလဲ",
+            "predicted_intent": "major",
+            "feedback": null
+        },
+        {
+            "id": "6a259f49-8c99-45a8-9ffc-c75b25f5cbf9",
+            "user_id": "anonymous",
+            "message": "အိုင်တီမေဂျာဆိုတာလဲ",
+            "predicted_intent": "Information Technology",
+            "feedback": null
+        },
+        {
+            "id": "92810d1f-a0f5-4e22-9fee-0a368efd600d",
+            "user_id": "anonymous",
+            "message": "TUMရဲ့တည်နေရာကိုပြောပြပါ။",
+            "predicted_intent": "address",
+            "feedback": null
+        },
+        {
+            "id": "f0eea829-83d2-4527-a802-1c94efea5861",
+            "user_id": "anonymous",
+            "message": "TUMမှာဘာမေဂျာတွေရှိလဲ",
+            "predicted_intent": "major",
+            "feedback": null
+        },
+        {
+            "id": "123776f7-3586-4d71-a4c1-246364497a03",
+            "user_id": "anonymous",
+            "message": "အိုင်တီမေဂျာအကြောင်းပြောပြပါ။",
+            "predicted_intent": "Information Technology",
+            "feedback": null
+        },
+        {
+            "id": "1bdfd66c-1965-4d5c-978e-694484195bba",
+            "user_id": "anonymous",
+            "message": "  ကျောင်းအဆောင်ရှိလာူ",
+            "predicted_intent": "hostel",
+            "feedback": null
+        },
+        {
+            "id": "cedf953f-82a6-428d-bbfb-a249d73852e7",
+            "user_id": "anonymous",
+            "message": "ကျောင်းအဆောင်တွေမှာထမင်းကျွေးလား",
+            "predicted_intent": "hostel_Food",
+            "feedback": null
+        },
+        {
+            "id": "2da1d7e9-92b2-490c-8421-ecefa6e08ed6",
+            "user_id": "anonymous",
+            "message": "မေဂျာ",
+            "predicted_intent": "major",
+            "feedback": null
+        },
+        {
+            "id": "d2438743-9595-4eeb-a37c-52bea5c8221b",
+            "user_id": "anonymous",
+            "message": "ကျောင်းလိပ်စာပြောပြပါ",
+            "predicted_intent": "greeting",
+            "feedback": null
+        },
+        {
+            "id": "0fc190b6-bba2-4160-9535-0e7d0492f7ba",
+            "user_id": "anonymous",
+            "message": "ကျောင်းအဆောင်ကထမင်းကျွေးလား",
+            "predicted_intent": "hostel_Food",
+            "feedback": null
+        },
+        {
+            "id": "213b3145-048c-4ab0-8267-68083f5daf20",
+            "user_id": "anonymous",
+            "message": "လိပ်စာပြောပြပါ",
+            "predicted_intent": "greeting",
+            "feedback": null
+        },
+        {
+            "id": "af9a7dd9-0c68-4902-8e65-5a58c8bf3ea9",
+            "user_id": "anonymous",
+            "message": "ကျောင်းအပ်ရင်ဘာတွေလိုအပ်ပါသလဲ",
+            "predicted_intent": "requirements",
+            "feedback": null
+        },
+        {
+            "id": "7d3be7c1-8505-40d8-ad71-cc1b33b120b6",
+            "user_id": "anonymous",
+            "message": "ကျောင်းလိပ်စာ ပြော ပြ ပါ",
+            "predicted_intent": "greeting",
+            "feedback": null
+        },
+        {
+            "id": "ece29bdc-7f67-4040-93ae-5b13002f10ab",
+            "user_id": "anonymous",
+            "message": "ကျောင်းလိပ်စာ ကို ပြော ပြ ပါ",
+            "predicted_intent": "address",
+            "feedback": null
+        },
+        {
+            "id": "e09c0655-3713-4054-9696-d70ba2dcf597",
+            "user_id": "anonymous",
+            "message": "ကျောင်းလိပ်စာကိုပြောပြပါ",
+            "predicted_intent": "address",
+            "feedback": null
+        },
+        {
+            "id": "ceb9afea-0e61-4720-8614-eae484c16125",
+            "user_id": "anonymous",
+            "message": "ကျောင်းသားရေးရာ",
+            "predicted_intent": "greeting",
+            "feedback": null
+        },
+        {
+            "id": "3e5c1ff0-d1db-4b60-904e-3dca6bfce3b2",
+            "user_id": "anonymous",
+            "message": "ကျောင်းလိပ်စာပြောပြပါ",
+            "predicted_intent": "address",
+            "feedback": null
+        },
+        {
+            "id": "f26cbecb-5773-4b2e-bcdd-f9335c679bb3",
+            "user_id": "anonymous",
+            "message": "ကျောင်းသားရေးရာဖုန်း",
+            "predicted_intent": "explain",
+            "feedback": null
+        },
+        {
+            "id": "f2891f68-cccd-47a9-985a-c0308405b47a",
+            "user_id": "anonymous",
+            "message": "ကျောင်းသားရေးရာဖုန်းနံပါတ်ကိုပြောပြပါ",
+            "predicted_intent": "address",
+            "feedback": null
+        },
+        {
+            "id": "498943d1-7e36-4d26-a4c1-289fa59b9732",
+            "user_id": "anonymous",
+            "message": "ကျောင်းသားရေးရာဖုန်း",
+            "predicted_intent": "explain",
+            "feedback": null
+        },
+        {
+            "id": "edd737a3-5ba5-4d2d-8f27-8e80c5183eac",
+            "user_id": "anonymous",
+            "message": "ကျောင်းသားရေးရာဖုန်းနံပါတ်ကိုပြောပြပါ ။",
+            "predicted_intent": "explain",
+            "feedback": null
+        },
+        {
+            "id": "3638062f-84ef-487d-9e80-8a862664be46",
+            "user_id": "anonymous",
+            "message": "ကျောင်းသား ရေးရာ ဖုန်း နံပါတ် ကို ပြော ပြ ပါ ။",
+            "predicted_intent": "Student_Affair",
+            "feedback": null
+        },
+        {
+            "id": "a731ee4b-c98d-4774-9a2e-c00586fd1dc0",
+            "user_id": "anonymous",
+            "message": "ကျောင်းသားရေးရာဖုန်း ",
+            "predicted_intent": "Student_Affair",
+            "feedback": null
+        }
+    ]
+}

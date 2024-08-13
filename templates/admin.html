@@ -1,0 +1,640 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin - User Inputs</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='admin_style.css') }}">
+    <style>
+        .nav-menu {
+            background-color: aqua;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+        }
+        .btn-danger {
+            padding: 10px 20px;
+        }
+        .user-info {
+            display: flex;
+            align-items: center;
+        }
+        .user-info span {
+            margin-left: 10px;
+            font-weight: bold;
+        }
+        .user-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: #fff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #000;
+        }
+        #admin-controls-tab {
+            display: none; /* Hide by default */
+        }
+    </style>
+</head>
+<body>
+    <script>
+        document.addEventListener('DOMContentLoaded', (event) => {
+            fetch('/check_auth')
+                .then(response => response.json())
+                .then(data => {
+                    if (!data.authenticated) {
+                        window.location.href = 'login.html';
+                    } else {
+                        document.getElementById('user-info').innerText = data.username;
+                        if (data.is_main) {
+                            document.getElementById('admin-controls-tab').style.display = 'block';
+                        }
+                    }
+                });
+        });
+
+        async function logout() {
+            await fetch('/logout', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            });
+            window.location.href = 'login.html';
+        }
+
+        async function saveSettings(event) {
+            event.preventDefault();
+            const newPassword = document.getElementById('new-password').value;
+
+            const response = await fetch('/update_password', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ password: newPassword })
+            });
+
+            const result = await response.json();
+            if (result.success) {
+                alert('Password updated successfully!');
+            } else {
+                alert(result.message);
+            }
+        }
+
+        async function addUser(event) {
+            event.preventDefault();
+            const username = document.getElementById('new-username').value;
+            const password = document.getElementById('new-user-password').value;
+
+            const response = await fetch('/add_user', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ username, password })
+            });
+
+            const result = await response.json();
+            if (result.success) {
+                alert('New user added successfully!');
+                document.getElementById('new-username').value = '';
+                document.getElementById('new-user-password').value = '';
+            } else {
+                alert(result.message);
+            }
+        }
+
+        async function switchMainAdmin(event) {
+            event.preventDefault();
+            const username = document.getElementById('switch-username').value;
+
+            const response = await fetch('/switch_main_admin', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ username })
+            });
+
+            const result = await response.json();
+            if (result.success) {
+                alert('Main admin switched successfully!');
+            } else {
+                alert(result.message);
+            }
+        }
+    </script>
+    <div class="nav-menu">
+        <div class="user-info">
+            <div class="user-icon" id="user-icon">U</div>
+            <span id="user-info"></span>
+        </div>
+        <button class="logout btn btn-danger" onclick="logout()">Logout</button>
+    </div>
+    <div class="container mt-5">
+        <h2 class="mb-4" style="font-weight: bold; color: #ffffff;">Admin Dashboard</h2>
+        
+        <ul class="nav nav-tabs" id="adminTab" role="tablist">
+            <li class="nav-item">
+                <a class="nav-link active" id="inputs-tab" data-toggle="tab" href="#inputs" role="tab" aria-controls="inputs" aria-selected="true">Inputs</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" id="update-tab" data-toggle="tab" href="#update" role="tab" aria-controls="update" aria-selected="false">Update</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" id="model-train-tab" data-toggle="tab" href="#model-train" role="tab" aria-controls="model-train" aria-selected="false">Model Train</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" id="settings-tab" data-toggle="tab" href="#settings" role="tab" aria-controls="settings" aria-selected="false">Settings</a>
+            </li>
+            <li class="nav-item" id="admin-controls-tab">
+                <a class="nav-link" id="admin-controls-tab-link" data-toggle="tab" href="#admin-controls" role="tab" aria-controls="admin-controls" aria-selected="false">Admin Controls</a>
+            </li>
+        </ul>
+        <div class="tab-content" id="adminTabContent">
+            <div class="tab-pane fade show active" id="inputs" role="tabpanel" aria-labelledby="inputs-tab">
+                <div class="mt-4">
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th>User ID</th>
+                                <th>Message</th>
+                                <th>Predicted Intent</th>
+                                <th>Feedback</th>
+                            </tr>
+                        </thead>
+                        <tbody id="user-inputs-body">
+                            <!-- Data will be dynamically inserted here -->
+                        </tbody>
+                    </table>
+                    <nav>
+                        <ul class="pagination justify-content-center" id="pagination">
+                            <!-- Pagination buttons will be dynamically inserted here -->
+                        </ul>
+                    </nav>
+                </div>
+            </div>
+            <div class="tab-pane fade" id="update" role="tabpanel" aria-labelledby="update-tab">
+                <div class="mt-4">
+                    <h4>JSON Data</h4>
+                    <div class="form-inline mb-3">
+                        <input type="text" class="form-control mr-2" id="search-input" placeholder="Search for a tag...">
+                        <button class="btn btn-primary" onclick="searchTag()">Search</button>
+                        <button class="btn btn-success ml-2" onclick="openAddModal()">Add New Intent</button>
+                    </div>
+                    <table class="table table-striped table-bordered">
+                        <thead>
+                            <tr>
+                                <th>
+                                    <button class="btn btn-link p-0 ml-2" onclick="sortTags()" style="text-decoration: none; color: inherit; border: none; background: none; display: flex; align-items: center;">
+                                        Tag
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 48 48" style="margin-left: 0.5em;">
+                                            <path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="4" d="M36 4v39.5M7 28h16L7 44h16M7 20l8.276-16L23 20m21 16l-8 8-8-8"/>
+                                        </svg>
+                                    </button>
+                                </th>
+                                
+                                
+                                
+                                <th>Patterns</th>
+                                <th>Responses</th>
+                                <th>Context</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="json-data-body">
+                            <!-- JSON data will be dynamically inserted here -->
+                        </tbody>
+                    </table>
+                    <button id="refresh-json" class="btn btn-primary">Refresh JSON Data</button>
+                </div>
+            </div>
+            <div class="tab-pane fade" id="model-train" role="tabpanel" aria-labelledby="model-train-tab">
+                <div class="mt-4">
+                    <h4>Train Model</h4>
+                    <form id="train-model-form">
+                        <div class="form-group">
+                            <label for="training-data">Upload Training Data (JSON)</label>
+                            <input type="file" class="form-control" id="training-data" accept=".json" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Start Training</button>
+                    </form>
+                    <div class="mt-4">
+                        <h5>Training Logs</h5>
+                        <pre id="training-logs" class="border p-3" style="height: 300px; overflow-y: scroll;"></pre>
+                    </div>
+                    <div class="mt-4">
+                        <h5>Model Accuracy</h5>
+                        <p id="model-accuracy"></p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-pane fade" id="settings" role="tabpanel" aria-labelledby="settings-tab">
+                <div class="mt-4">
+                    <h4>Settings</h4>
+                    <form id="settings-form" onsubmit="saveSettings(event)">
+                        <div class="form-group">
+                            <label for="new-password">New Password</label>
+                            <input type="password" class="form-control" id="new-password" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Save Changes</button>
+                    </form>
+                </div>
+            </div>
+            <div class="tab-pane fade" id="admin-controls" role="tabpanel" aria-labelledby="admin-controls-tab-link">
+                <div class="mt-4">
+                    <h4>Admin Controls</h4>
+                    <form id="add-user-form" onsubmit="addUser(event)">
+                        <div class="form-group">
+                            <label for="new-username">New Username</label>
+                            <input type="text" class="form-control" id="new-username" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="new-user-password">New User Password</label>
+                            <input type="password" class="form-control" id="new-user-password" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Add User</button>
+                    </form>
+                    <form id="switch-admin-form" onsubmit="switchMainAdmin(event)">
+                        <div class="form-group">
+                            <label for="switch-username">Username to Switch to Main Admin</label>
+                            <input type="text" class="form-control" id="switch-username" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Switch Main Admin</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit JSON Modal -->
+    <div class="modal fade" id="editJsonModal" tabindex="-1" role="dialog" aria-labelledby="editJsonModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="editJsonModalLabel">Edit JSON Data</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form id="edit-json-form">
+                        <div class="form-group">
+                            <label for="edit-tag">Tag</label>
+                            <input type="text" class="form-control" id="edit-tag" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="edit-patterns">Patterns (comma-separated)</label>
+                            <textarea class="form-control" id="edit-patterns" rows="5" required></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label for="edit-responses">Responses (comma-separated)</label>
+                            <textarea class="form-control" id="edit-responses" rows="5" required></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label for="edit-context">Context (comma-separated)</label>
+                            <input type="text" class="form-control" id="edit-context">
+                        </div>
+                        <button type="submit" class="btn btn-primary">Save changes</button>
+                        <button type="button" id="segment-patterns" class="btn btn-secondary">Segment Patterns</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add JSON Modal -->
+    <div class="modal fade" id="addJsonModal" tabindex="-1" role="dialog" aria-labelledby="addJsonModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="addJsonModalLabel">Add New Intent</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form id="add-json-form">
+                        <div class="form-group">
+                            <label for="add-tag">Tag</label>
+                            <input type="text" class="form-control" id="add-tag" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="add-patterns">Patterns (comma-separated)</label>
+                            <textarea class="form-control" id="add-patterns" rows="5" required></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label for="add-responses">Responses (comma-separated)</label>
+                            <textarea class="form-control" id="add-responses" rows="5" required></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label for="add-context">Context (comma-separated)</label>
+                            <input type="text" class="form-control" id="add-context">
+                        </div>
+                        <button type="submit" class="btn btn-success">Add Intent</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const recordsPerPage = 12;
+        let currentPage = 1;
+        let userInputs = [];
+        let jsonData = [];
+        let filteredData = [];
+        let sortOrder = 'asc';
+
+        document.addEventListener('DOMContentLoaded', (event) => {
+            fetch('/api/user_inputs')
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok ' + response.statusText);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    userInputs = data.user_inputs;
+                    displayPage(1);
+                    setupPagination();
+                })
+                .catch(error => console.error('Error fetching user inputs:', error));
+
+            document.getElementById('refresh-json').addEventListener('click', fetchJsonData);
+            document.getElementById('segment-patterns').addEventListener('click', segmentPatterns);
+            fetchJsonData();
+        });
+
+        function displayPage(page) {
+            currentPage = page;
+            const start = (page - 1) * recordsPerPage;
+            const end = start + recordsPerPage;
+            const inputsToDisplay = userInputs.slice(start, end);
+
+            const tbody = document.getElementById('user-inputs-body');
+            tbody.innerHTML = '';
+
+            inputsToDisplay.forEach(input => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${input.user_id}</td>
+                    <td>${input.message}</td>
+                    <td>${input.predicted_intent}</td>
+                    <td>${input.feedback || ''}</td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        function setupPagination() {
+            const pageCount = Math.ceil(userInputs.length / recordsPerPage);
+            const pagination = document.getElementById('pagination');
+            pagination.innerHTML = '';
+
+            const prevLi = document.createElement('li');
+            prevLi.className = 'page-item' + (currentPage === 1 ? ' disabled' : '');
+            prevLi.innerHTML = `<a class="page-link" href="#" aria-label="Previous">
+                                    <span aria-hidden="true">&laquo;</span>
+                                </a>`;
+            prevLi.addEventListener('click', (event) => {
+                event.preventDefault();
+                if (currentPage > 1) {
+                    displayPage(currentPage - 1);
+                    setupPagination();
+                }
+            });
+            pagination.appendChild(prevLi);
+
+            for (let i = 1; i <= pageCount; i++) {
+                const li = document.createElement('li');
+                li.className = 'page-item' + (i === currentPage ? ' active' : '');
+                li.innerHTML = `<a class="page-link" href="#">${i}</a>`;
+                li.addEventListener('click', (event) => {
+                    event.preventDefault();
+                    displayPage(i);
+                    setupPagination();
+                });
+                pagination.appendChild(li);
+            }
+
+            const nextLi = document.createElement('li');
+            nextLi.className = 'page-item' + (currentPage === pageCount ? ' disabled' : '');
+            nextLi.innerHTML = `<a class="page-link" href="#" aria-label="Next">
+                                    <span aria-hidden="true">&raquo;</span>
+                                </a>`;
+            nextLi.addEventListener('click', (event) => {
+                event.preventDefault();
+                if (currentPage < pageCount) {
+                    displayPage(currentPage + 1);
+                    setupPagination();
+                }
+            });
+            pagination.appendChild(nextLi);
+        }
+
+        function fetchJsonData() {
+            fetch('/api/json_data')
+                .then(response => response.json())
+                .then(data => {
+                    jsonData = data.intents;
+                    filteredData = jsonData;
+                    displayJsonData(filteredData);
+                })
+                .catch(error => console.error('Error fetching JSON data:', error));
+        }
+
+        function displayJsonData(data) {
+            const tbody = document.getElementById('json-data-body');
+            tbody.innerHTML = '';
+
+            data.forEach((intent, index) => {
+                const row = document.createElement('tr');
+
+                const tagCell = document.createElement('td');
+                tagCell.textContent = intent.tag;
+                row.appendChild(tagCell);
+
+                const patternsCell = document.createElement('td');
+                patternsCell.textContent = intent.patterns.join(',\n');
+                row.appendChild(patternsCell);
+
+                const responsesCell = document.createElement('td');
+                responsesCell.textContent = intent.responses.join(',\n');
+                row.appendChild(responsesCell);
+
+                const contextCell = document.createElement('td');
+                contextCell.textContent = intent.context.join(',\n');
+                row.appendChild(contextCell);
+
+                const actionsCell = document.createElement('td');
+                const editButton = document.createElement('button');
+                editButton.className = 'btn btn-sm btn-primary';
+                editButton.textContent = 'Edit';
+                editButton.setAttribute('data-index', index);
+                editButton.addEventListener('click', () => openEditModal(index));
+                actionsCell.appendChild(editButton);
+                row.appendChild(actionsCell);
+
+                tbody.appendChild(row);
+            });
+        }
+
+        function searchTag() {
+            const searchInput = document.getElementById('search-input').value.toLowerCase();
+            filteredData = jsonData.filter(intent => intent.tag.toLowerCase().includes(searchInput));
+            displayJsonData(filteredData);
+        }
+
+        function sortTags() {
+            if (sortOrder === 'asc') {
+                filteredData.sort((a, b) => a.tag.localeCompare(b.tag));
+                sortOrder = 'desc';
+            } else {
+                filteredData.sort((a, b) => b.tag.localeCompare(a.tag));
+                sortOrder = 'asc';
+            }
+            displayJsonData(filteredData);
+        }
+
+        function openEditModal(index) {
+            const intent = filteredData[index];
+            document.getElementById('edit-tag').value = intent.tag;
+            document.getElementById('edit-patterns').value = intent.patterns.join(',\n');
+            document.getElementById('edit-responses').value = intent.responses.join(',\n');
+            document.getElementById('edit-context').value = intent.context ? intent.context.join(',\n') : '';
+            document.getElementById('edit-json-form').setAttribute('data-index', index);
+            $('#editJsonModal').modal('show');
+        }
+
+        function openAddModal() {
+            document.getElementById('add-tag').value = '';
+            document.getElementById('add-patterns').value = '';
+            document.getElementById('add-responses').value = '';
+            document.getElementById('add-context').value = '';
+            $('#addJsonModal').modal('show');
+        }
+
+        document.getElementById('edit-json-form').addEventListener('submit', function (event) {
+            event.preventDefault();
+            const index = this.getAttribute('data-index');
+            const updatedIntent = {
+                tag: document.getElementById('edit-tag').value,
+                patterns: document.getElementById('edit-patterns').value.split(',').map(item => item.trim()),
+                responses: document.getElementById('edit-responses').value.split(',').map(item => item.trim()),
+                context: document.getElementById('edit-context').value.split(',').map(item => item.trim())
+            };
+            const originalIndex = jsonData.findIndex(intent => intent.tag === filteredData[index].tag);
+            jsonData[originalIndex] = updatedIntent;
+            $('#editJsonModal').modal('hide');
+            updateJsonData(jsonData);
+        });
+
+        document.getElementById('add-json-form').addEventListener('submit', function (event) {
+            event.preventDefault();
+            const newIntent = {
+                tag: document.getElementById('add-tag').value,
+                patterns: document.getElementById('add-patterns').value.split(',').map(item => item.trim()),
+                responses: document.getElementById('add-responses').value.split(',').map(item => item.trim()),
+                context: document.getElementById('add-context').value.split(',').map(item => item.trim())
+            };
+            jsonData.push(newIntent);
+            $('#addJsonModal').modal('hide');
+            updateJsonData(jsonData);
+        });
+
+        function updateJsonData(data) {
+            fetch('/api/json_data', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ intents: data }),
+            })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok ' + response.statusText);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    console.log('JSON data updated:', data);
+                    fetchJsonData();
+                })
+                .catch(error => console.error('Error updating JSON data:', error));
+        }
+
+        function segmentPatterns() {
+            const index = document.getElementById('edit-json-form').getAttribute('data-index');
+            const intent = filteredData[index];
+            fetch('/segment_patterns', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    intents: [
+                        {
+                            tag: intent.tag,
+                            patterns: intent.patterns,
+                            responses: intent.responses,
+                            context: intent.context
+                        }
+                    ]
+                }),
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.intents && data.intents.length > 0) {
+                        const originalIndex = jsonData.findIndex(originalIntent => originalIntent.tag === intent.tag);
+                        jsonData[originalIndex].patterns = data.intents[0].patterns;
+                        filteredData[index].patterns = data.intents[0].patterns;
+                        displayJsonData(filteredData);
+                        $('#editJsonModal').modal('hide');
+                    }
+                })
+                .catch(error => console.error('Error segmenting patterns:', error));
+        }
+
+        document.getElementById('train-model-form').addEventListener('submit', function(event) {
+            event.preventDefault();
+            const fileInput = document.getElementById('training-data');
+            const file = fileInput.files[0];
+            const formData = new FormData();
+            formData.append('file', file);
+
+            const logsElement = document.getElementById('training-logs');
+            const accuracyElement = document.getElementById('model-accuracy');
+            logsElement.textContent = '';
+            accuracyElement.textContent = '';
+
+            fetch('/train_model', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.logs) {
+                    logsElement.textContent = data.logs.join('\n');
+                }
+                if (data.accuracy) {
+                    accuracyElement.textContent = `Model Accuracy: ${data.accuracy.toFixed(2)}%`;
+                }
+            })
+            .catch(error => console.error('Error:', error));
+        });
+
+    </script>
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.com/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>
