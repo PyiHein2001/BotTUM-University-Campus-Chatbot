@@ -78,108 +78,143 @@
             "feedback": null
         },
         {
-            "id": "d2438743-9595-4eeb-a37c-52bea5c8221b",
+            "id": "154368fe-c5bf-46e1-8df0-1923b51cf6c8",
             "user_id": "anonymous",
             "message": "ကျောင်းလိပ်စာပြောပြပါ",
+            "predicted_intent": "address",
+            "feedback": null
+        },
+        {
+            "id": "5fecedb6-fb39-427d-ae41-3418550fe5f3",
+            "user_id": "anonymous",
+            "message": "ကျောင်းသားရေးရာဖုန်းနံပါတ်လေးများသိနိုင်မလား",
+            "predicted_intent": "Student_Affair",
+            "feedback": null
+        },
+        {
+            "id": "ebdc5725-390d-4740-a71b-d3d18c48809a",
+            "user_id": "anonymous",
+            "message": "အိုင်တီမေဂျာအကြောင်းပြောပါ",
+            "predicted_intent": "Information Technology",
+            "feedback": null
+        },
+        {
+            "id": "5a12d10d-dab6-409c-89c1-bb32a0d331d9",
+            "user_id": "anonymous",
+            "message": "HI",
             "predicted_intent": "greeting",
             "feedback": null
         },
         {
-            "id": "0fc190b6-bba2-4160-9535-0e7d0492f7ba",
+            "id": "f2fab006-84fe-434c-ac05-a55e46756698",
             "user_id": "anonymous",
-            "message": "ကျောင်းအဆောင်ကထမင်းကျွေးလား",
-            "predicted_intent": "hostel_Food",
+            "message": "ကျောင်းမှာဘာမေဂျာတွေရှိလဲ။",
+            "predicted_intent": "major",
             "feedback": null
         },
         {
-            "id": "213b3145-048c-4ab0-8267-68083f5daf20",
+            "id": "8b0e56f9-9441-4626-b3b2-a9e654fc50ec",
             "user_id": "anonymous",
-            "message": "လိပ်စာပြောပြပါ",
-            "predicted_intent": "greeting",
+            "message": "TUMရဲ့တည်နေရာကိုပြောပြပါ။",
+            "predicted_intent": "address",
+            "feedback": "up"
+        },
+        {
+            "id": "a88d7768-b142-4505-9532-0334329633f8",
+            "user_id": "anonymous",
+            "message": "TUMရဲ့တည်နေရာကိုပြောပြပါ။",
+            "predicted_intent": "address",
+            "feedback": "up"
+        },
+        {
+            "id": "a0335b16-7b5f-4d57-a9fd-6ac7e8a39ed4",
+            "user_id": "anonymous",
+            "message": "အိုင်တီမေဂျာကဘာလဲ",
+            "predicted_intent": "Information Technology",
+            "feedback": "up"
+        },
+        {
+            "id": "04146ff9-cd28-4150-8749-cffe16c45d07",
+            "user_id": "anonymous",
+            "message": "ကန်တင်းရှိလား",
+            "predicted_intent": "canteen",
             "feedback": null
         },
         {
-            "id": "af9a7dd9-0c68-4902-8e65-5a58c8bf3ea9",
+            "id": "90b4b89a-7fb1-4f3f-9b61-a597b9a0542e",
             "user_id": "anonymous",
-            "message": "ကျောင်းအပ်ရင်ဘာတွေလိုအပ်ပါသလဲ",
+            "message": "ကျောင်းအပ်ရင်ဘာတွေလိုအပ်လဲ",
             "predicted_intent": "requirements",
             "feedback": null
         },
         {
-            "id": "7d3be7c1-8505-40d8-ad71-cc1b33b120b6",
+            "id": "da35037f-7840-4118-9de9-de6ce6be659e",
             "user_id": "anonymous",
-            "message": "ကျောင်းလိပ်စာ ပြော ပြ ပါ",
-            "predicted_intent": "greeting",
+            "message": "အဆောင်ကပျော်ဖို့ကောင်းလား",
+            "predicted_intent": "teacher",
             "feedback": null
         },
         {
-            "id": "ece29bdc-7f67-4040-93ae-5b13002f10ab",
+            "id": "11d58923-7acc-4c88-b6da-35f1c5440a95",
             "user_id": "anonymous",
-            "message": "ကျောင်းလိပ်စာ ကို ပြော ပြ ပါ",
+            "message": "အဆောင်လျှောက်ဖို့ဘာတွေလိုလဲ",
+            "predicted_intent": "hostel",
+            "feedback": null
+        },
+        {
+            "id": "098bfd68-e40f-4bc0-8a0e-df0e5d8f813c",
+            "user_id": "anonymous",
+            "message": "ကျောင်းကန်တင်းကစားကောင်းလား",
+            "predicted_intent": "about",
+            "feedback": null
+        },
+        {
+            "id": "67db8321-9bae-4253-911b-403a972d7a3e",
+            "user_id": "anonymous",
+            "message": "TUM ရဲ့ တည် နေရာကိုပြေ ာ ပြ ပါ ။",
             "predicted_intent": "address",
             "feedback": null
         },
         {
-            "id": "e09c0655-3713-4054-9696-d70ba2dcf597",
+            "id": "f46f5891-8ed9-4da1-8d15-a72290129a69",
             "user_id": "anonymous",
-            "message": "ကျောင်းလိပ်စာကိုပြောပြပါ",
-            "predicted_intent": "address",
+            "message": "ဒီကျောင်းတက်ရင်ဘာရမှာလဲ",
+            "predicted_intent": "coe",
             "feedback": null
         },
         {
-            "id": "ceb9afea-0e61-4720-8614-eae484c16125",
+            "id": "64ffca0b-5ad2-40ef-93fc-cb9295c04df3",
             "user_id": "anonymous",
-            "message": "ကျောင်းသားရေးရာ",
-            "predicted_intent": "greeting",
+            "message": "ဒီကျောင်းတက်ရင်ဘာဖြစ်မှာလဲ",
+            "predicted_intent": "coe",
             "feedback": null
         },
         {
-            "id": "3e5c1ff0-d1db-4b60-904e-3dca6bfce3b2",
+            "id": "2ae838ee-625d-42a7-9a2b-7a2567f50a7b",
             "user_id": "anonymous",
-            "message": "ကျောင်းလိပ်စာပြောပြပါ",
-            "predicted_intent": "address",
+            "message": "ကျောင်းပြီးရင်ရော",
+            "predicted_intent": "after_graduate",
             "feedback": null
         },
         {
-            "id": "f26cbecb-5773-4b2e-bcdd-f9335c679bb3",
+            "id": "4b8e25d9-0984-43ed-8672-0d229d0fbf47",
             "user_id": "anonymous",
-            "message": "ကျောင်းသားရေးရာဖုန်း",
-            "predicted_intent": "explain",
+            "message": "ဒီကျောင်းတက်သင့်မတက်",
+            "predicted_intent": "training_period",
             "feedback": null
         },
         {
-            "id": "f2891f68-cccd-47a9-985a-c0308405b47a",
+            "id": "a08d3e36-c961-40af-92e9-562008c27885",
             "user_id": "anonymous",
-            "message": "ကျောင်းသားရေးရာဖုန်းနံပါတ်ကိုပြောပြပါ",
-            "predicted_intent": "address",
+            "message": "ဘာပွဲတွေလုပ်လဲ",
+            "predicted_intent": "activity",
             "feedback": null
         },
         {
-            "id": "498943d1-7e36-4d26-a4c1-289fa59b9732",
+            "id": "5ea514c2-887e-45b8-b8ff-0791ff5ad44c",
             "user_id": "anonymous",
-            "message": "ကျောင်းသားရေးရာဖုန်း",
-            "predicted_intent": "explain",
-            "feedback": null
-        },
-        {
-            "id": "edd737a3-5ba5-4d2d-8f27-8e80c5183eac",
-            "user_id": "anonymous",
-            "message": "ကျောင်းသားရေးရာဖုန်းနံပါတ်ကိုပြောပြပါ ။",
-            "predicted_intent": "explain",
-            "feedback": null
-        },
-        {
-            "id": "3638062f-84ef-487d-9e80-8a862664be46",
-            "user_id": "anonymous",
-            "message": "ကျောင်းသား ရေးရာ ဖုန်း နံပါတ် ကို ပြော ပြ ပါ ။",
-            "predicted_intent": "Student_Affair",
-            "feedback": null
-        },
-        {
-            "id": "a731ee4b-c98d-4774-9a2e-c00586fd1dc0",
-            "user_id": "anonymous",
-            "message": "ကျောင်းသားရေးရာဖုန်း ",
-            "predicted_intent": "Student_Affair",
+            "message": "ရည်းစားရမှာလား",
+            "predicted_intent": "internship",
             "feedback": null
         }
     ]

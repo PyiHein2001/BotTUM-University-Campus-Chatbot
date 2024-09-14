@@ -188,7 +188,7 @@ body {
 .form-control {
     
     border: 1px solid rgba(255, 255, 255, 0.18);
-    color: #ffffff;
+    color: hsl(0, 0%, 4%);
 }
 
 .form-control:focus {

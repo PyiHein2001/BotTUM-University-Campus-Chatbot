@@ -162,6 +162,7 @@
         <div class="tab-content" id="adminTabContent">
             <div class="tab-pane fade show active" id="inputs" role="tabpanel" aria-labelledby="inputs-tab">
                 <div class="mt-4">
+                    <button id="sort-toggle">Sort by Date (Ascending)</button>
                     <table class="table table-bordered">
                         <thead>
                             <tr>
@@ -169,6 +170,7 @@
                                 <th>Message</th>
                                 <th>Predicted Intent</th>
                                 <th>Feedback</th>
+                                <th>Date</th>
                             </tr>
                         </thead>
                         <tbody id="user-inputs-body">
@@ -347,53 +349,99 @@
     </div>
 
     <script>
-        const recordsPerPage = 12;
-        let currentPage = 1;
-        let userInputs = [];
-        let jsonData = [];
-        let filteredData = [];
-        let sortOrder = 'asc';
+       const recordsPerPage = 12;
+let currentPage = 1;
+let userInputs = [];
+let jsonData = [];
+let filteredData = [];
+let sortOrder = 'asc'; // Default sort order (ascending)
 
-        document.addEventListener('DOMContentLoaded', (event) => {
-            fetch('/api/user_inputs')
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error('Network response was not ok ' + response.statusText);
-                    }
-                    return response.json();
-                })
-                .then(data => {
-                    userInputs = data.user_inputs;
-                    displayPage(1);
-                    setupPagination();
-                })
-                .catch(error => console.error('Error fetching user inputs:', error));
+document.addEventListener('DOMContentLoaded', (event) => {
+    fetchUserInputs();
+    
+    // Event listeners for buttons
+    document.getElementById('refresh-json').addEventListener('click', fetchJsonData);
+    document.getElementById('segment-patterns').addEventListener('click', segmentPatterns);
+    document.getElementById('sort-toggle').addEventListener('click', toggleSortOrder); // For sorting by date
+    fetchJsonData();
+});
 
-            document.getElementById('refresh-json').addEventListener('click', fetchJsonData);
-            document.getElementById('segment-patterns').addEventListener('click', segmentPatterns);
-            fetchJsonData();
-        });
+function fetchUserInputs() {
+    fetch('/api/user_inputs')
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok ' + response.statusText);
+            }
+            return response.json();
+        })
+        .then(data => {
+            // Access the user_inputs array within the returned object
+            userInputs = data.user_inputs;
 
-        function displayPage(page) {
-            currentPage = page;
-            const start = (page - 1) * recordsPerPage;
-            const end = start + recordsPerPage;
-            const inputsToDisplay = userInputs.slice(start, end);
+            // Check if userInputs is an array before proceeding
+            if (Array.isArray(userInputs)) {
+                displayPage(1);
+                setupPagination();
+            } else {
+                console.error('Expected an array but received:', userInputs);
+            }
+        })
+        .catch(error => console.error('Error fetching user inputs:', error));
+}
 
-            const tbody = document.getElementById('user-inputs-body');
-            tbody.innerHTML = '';
+// Function to toggle between ascending and descending sort order
+function toggleSortOrder() {
+    sortOrder = sortOrder === 'asc' ? 'desc' : 'asc'; // Toggle between asc and desc
+    sortUserInputs();
+    displayPage(1); // Redisplay the first page after sorting
+}
 
-            inputsToDisplay.forEach(input => {
-                const row = document.createElement('tr');
-                row.innerHTML = `
-                    <td>${input.user_id}</td>
-                    <td>${input.message}</td>
-                    <td>${input.predicted_intent}</td>
-                    <td>${input.feedback || ''}</td>
-                `;
-                tbody.appendChild(row);
-            });
+// Function to sort user inputs by timestamp
+function sortUserInputs() {
+    if (sortOrder === 'asc') {
+        userInputs.sort((a, b) => (a.timestamp.seconds || 0) - (b.timestamp.seconds || 0)); // Ascending
+    } else {
+        userInputs.sort((a, b) => (b.timestamp.seconds || 0) - (a.timestamp.seconds || 0)); // Descending
+    }
+
+    // Update the sort button to show the current sort order
+    const sortButton = document.getElementById('sort-toggle');
+    sortButton.innerText = `Sort by Date (${sortOrder === 'asc' ? 'Ascending' : 'Descending'})`;
+}
+
+// Function to display a specific page of inputs
+function displayPage(page) {
+    currentPage = page;
+    const start = (page - 1) * recordsPerPage;
+    const end = start + recordsPerPage;
+
+    // Ensure userInputs is an array and has items
+    const inputsToDisplay = Array.isArray(userInputs) ? userInputs.slice(start, end) : [];
+
+    const tbody = document.getElementById('user-inputs-body');
+    tbody.innerHTML = '';
+
+    inputsToDisplay.forEach(input => {
+        const row = document.createElement('tr');
+        
+        // Convert Firestore timestamp to readable date
+        // const timestamp = input.timestamp ? new Date(input.timestamp.seconds * 1000).toLocaleString() : 'N/A';
+        let formattedDate = 'N/A'; // Default value in case of missing timestamp
+        if (input.timestamp && input.timestamp.seconds) {
+            const timestamp = new Date(input.timestamp.seconds * 1000); // Convert seconds to milliseconds
+            formattedDate = timestamp.toLocaleString(); // Convert to human-readable format
         }
+        row.innerHTML = `
+            <td>${input.user_id || 'N/A'}</td>
+            <td>${input.message || 'N/A'}</td>
+            <td>${input.predicted_intent || 'N/A'}</td>
+            <td>${input.feedback || ''}</td>
+            <td>${formattedDate}</td>
+        `;
+        tbody.appendChild(row);
+    });
+}
+
 
         function setupPagination() {
             const pageCount = Math.ceil(userInputs.length / recordsPerPage);
@@ -636,5 +684,7 @@
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.com/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
+
 </body>
 </html>

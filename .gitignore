@@ -29,7 +29,9 @@ migrations/
 test1-314913-e1c1840792b8.json
 uploads/
 
-
-
-
-
+#firebase
+.firebaserc
+bottum-402e2-firebase-adminsdk-txgxn-0018efdfde.json
+firebase.json
+firestore.indexes.json
+firestore.rules

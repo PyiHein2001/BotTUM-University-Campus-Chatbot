@@ -12,10 +12,13 @@ from nltk.stem import WordNetLemmatizer
 import tensorflow as tf
 from tensorflow.keras.models import load_model
 from tensorflow.keras.optimizers import SGD
-from tensorflow.keras.models import Sequential
-from tensorflow.keras.layers import Dense, Dropout
 from collections import OrderedDict
 from seg import segment_word
+from datetime import datetime
+
+# Firebase Admin SDK
+import firebase_admin
+from firebase_admin import credentials, firestore, storage
 
 # Ensure NLTK data is downloaded
 nltk.download('punkt', quiet=True)
@@ -25,11 +28,20 @@ app = Flask(__name__)
 app.secret_key = 'your_secret_key'  # Required for session management
 CORS(app)
 
+# Firebase Admin SDK initialization
+cred = credentials.Certificate("/Users/pyiheinsan/Web_Chatbot/bottum-402e2-firebase-adminsdk-txgxn-0018efdfde.json")  # Replace with your service account key file path
+firebase_admin.initialize_app(cred, {
+    'storageBucket': 'gs://bottum-402e2.appspot.com'  # Replace with your Firebase project ID
+})
+
+# Initialize Firestore and Firebase Storage
+db = firestore.client()
+bucket = storage.bucket()
+
+
+
 # Path to the JSON file for user credentials
 CREDENTIALS_FILE = 'credentials.json'
-
-# Path to the JSON file for user inputs
-USER_INPUTS_FILE = 'user_inputs.json'
 
 # Initialize the lemmatizer
 lemmatizer = WordNetLemmatizer()
@@ -131,45 +143,54 @@ def chatbot_response(text):
         res = "မေးခွန်းတွက် သင့်တော်သော အဖြေ မပေးနိုင် ၍ ဝမ်းနည်း ပါတယ်။ ကျောင်းသားရေးရာ ဖုန်းနံပါတ် ၀၉-၉၈၈၄၈၄၁၇၂ ကို ဆက်သွယ်၍ အသေးစိတ်ကို မေးမြန်း နိုင်ပါတယ် ။"
     return res, ints[0]['intent']
 
-# Load credentials from the JSON file
+# Log user input to Firestore
+# def log_user_input(user_id, user_message, predicted_intent, feedback=None):
+#     """Log user inputs to Firebase Firestore."""
+#     unique_id = str(uuid.uuid4())
+#     user_input_data = {
+#         "id": unique_id,
+#         "user_id": user_id,
+#         "message": user_message,
+#         "predicted_intent": predicted_intent,
+#         "feedback": feedback
+#     }
+
+#     # print(f"Logging user input: {user_input_data}")  # Debugging log
+
+#     # Store input in Firestore
+#     db.collection('user_inputs').document(unique_id).set(user_input_data)
+
+#     return unique_id
+def log_user_input(user_id, user_message, predicted_intent, feedback=None):
+    """Log user inputs to Firestore with a timestamp."""
+    unique_id = str(uuid.uuid4())  # Generate a unique ID for each input
+
+    user_input_data = {
+        "id": unique_id,
+        "user_id": user_id,
+        "message": user_message,
+        "predicted_intent": predicted_intent,
+        "feedback": feedback,
+        "timestamp": firestore.SERVER_TIMESTAMP  # Store server timestamp
+    }
+
+    # Add the user input to the 'user_inputs' collection in Firestore
+    db.collection('user_inputs').document(unique_id).set(user_input_data)
+    print(f"User input logged with ID: {unique_id}")
+
+    return unique_id
+
 def load_credentials():
+    """Load user credentials from JSON file."""
     if not os.path.exists(CREDENTIALS_FILE):
         return {'users': [{'username': 'admin', 'password': 'password', 'is_main': True}]}
     with open(CREDENTIALS_FILE, 'r') as f:
         return json.load(f)
 
-# Save credentials to the JSON file
 def save_credentials(credentials):
+    """Save user credentials to JSON file."""
     with open(CREDENTIALS_FILE, 'w') as f:
         json.dump(credentials, f)
-
-# Initialize the JSON file for user inputs
-def initialize_json_file():
-    if not os.path.exists(USER_INPUTS_FILE):
-        with open(USER_INPUTS_FILE, 'w', encoding='utf-8') as file:
-            json.dump({'user_inputs': []}, file, ensure_ascii=False, indent=4)
-
-initialize_json_file()
-
-def log_user_input(user_id, user_message, predicted_intent, feedback=None):
-    """Log user inputs to a JSON file."""
-    unique_id = str(uuid.uuid4())
-    new_input = {
-        "id": unique_id,
-        "user_id": user_id,
-        "message": user_message,
-        "predicted_intent": predicted_intent,
-        "feedback": feedback
-    }
-    with open(USER_INPUTS_FILE, 'r+', encoding='utf-8') as file:
-        user_inputs = json.load(file)
-        for entry in user_inputs['user_inputs']:
-            if 'id' not in entry:
-                entry['id'] = str(uuid.uuid4())
-        user_inputs['user_inputs'].append(new_input)
-        file.seek(0)
-        json.dump(user_inputs, file, ensure_ascii=False, indent=4)
-    return unique_id
 
 # Route to serve the home page
 @app.route('/')
@@ -183,6 +204,7 @@ def admin_page():
         return redirect(url_for('login_page'))
     return render_template('admin.html')
 
+
 # Route to handle chat messages
 @app.route('/chat', methods=['POST'])
 def chat():
@@ -195,6 +217,22 @@ def chat():
         "message_id": message_id
     }
     return jsonify(response)
+
+# Route to handle feedback submission
+@app.route('/feedback', methods=['POST'])
+def feedback():
+    feedback_data = request.json
+    feedback = feedback_data.get('feedback')
+    message_id = feedback_data.get('id')
+
+    # Retrieve the document by message ID and update feedback in Firestore
+    doc_ref = db.collection('user_inputs').document(message_id)
+    doc = doc_ref.get()
+    if doc.exists:
+        doc_ref.update({'feedback': feedback})
+        return jsonify({'status': 'success'})
+    else:
+        return jsonify({'status': 'error', 'message': 'Document not found'}), 404
 
 # Route to handle login
 @app.route('/login', methods=['POST'])
@@ -235,7 +273,7 @@ def update_password():
     data = request.json
     username = session.get('username')
     new_password = data.get('password')
-    
+
     credentials = load_credentials()
     for user in credentials['users']:
         if user['username'] == username:
@@ -255,7 +293,7 @@ def add_user():
         'password': data.get('password'),
         'is_main': False
     }
-    
+
     credentials = load_credentials()
     credentials['users'].append(new_user)
     save_credentials(credentials)
@@ -268,19 +306,24 @@ def switch_main_admin():
         return jsonify({'success': False, 'message': 'Not authorized'})
     data = request.json
     new_main_username = data.get('username')
-    
+
     credentials = load_credentials()
     for user in credentials['users']:
         user['is_main'] = (user['username'] == new_main_username)
     save_credentials(credentials)
     return jsonify({'success': True})
 
-# Route to handle user inputs API
-@app.route('/api/user_inputs')
-def api_user_inputs():
-    with open(USER_INPUTS_FILE, 'r', encoding='utf-8') as file:
-        user_inputs = json.load(file)
-    return jsonify(user_inputs)
+# Route to serve the login page
+@app.route('/login.html')
+def login_page():
+    return render_template('login.html')
+
+# Route to serve the settings page
+@app.route('/settings.html')
+def settings_page():
+    if not session.get('authenticated'):
+        return redirect(url_for('login_page'))
+    return render_template('settings.html')
 
 # Route to handle JSON data API for intents
 @app.route('/api/json_data', methods=['GET', 'POST'])
@@ -304,11 +347,44 @@ def api_json_data():
             data = json.load(file, object_pairs_hook=OrderedDict)
         return jsonify(data)
 
-# Ensure the uploads directory exists
-if not os.path.exists('uploads'):
-    os.makedirs('uploads')
+# Route to handle user inputs API
+# @app.route('/api/user_inputs')
+# def api_user_inputs():
+#     user_inputs = [doc.to_dict() for doc in db.collection('user_inputs').stream()]
+#     return jsonify(user_inputs)
 
-# Define the route for training the model
+@app.route('/api/user_inputs')
+def get_user_inputs():
+    """Fetch all user inputs from Firestore in ascending order by timestamp."""
+    user_inputs_ref = db.collection('user_inputs').order_by('timestamp', direction=firestore.Query.ASCENDING)
+    user_inputs = user_inputs_ref.stream()
+
+    user_inputs_list = []
+    for doc in user_inputs:
+        input_data = doc.to_dict()
+        user_inputs_list.append(input_data)
+
+    return jsonify({"user_inputs": user_inputs_list})
+
+# Route to upload model file to Firebase Storage
+@app.route('/upload_model', methods=['POST'])
+def upload_model():
+    if 'file' not in request.files:
+        return jsonify({"error": "No file part"}), 400
+
+    file = request.files['file']
+    if file.filename == '':
+        return jsonify({"error": "No selected file"}), 400
+
+    # Save file temporarily and upload it to Firebase Storage
+    file_path = os.path.join('uploads', file.filename)
+    file.save(file_path)
+    blob = bucket.blob(f'models/{file.filename}')
+    blob.upload_from_filename(file_path)
+
+    return jsonify({"status": "File uploaded successfully"})
+
+# Route to define the model training
 @app.route('/train_model', methods=['POST'])
 def train_model():
     if 'file' not in request.files:
@@ -327,11 +403,9 @@ def train_model():
     return jsonify({"error": "Invalid file format"}), 400
 
 def train_model_from_file(file_path):
+    """Train a chatbot model from a JSON file."""
     with open(file_path) as file:
         data = json.load(file)
-
-    nltk.download('punkt', quiet=True)
-    nltk.download('wordnet', quiet=True)
 
     lemmatizer = WordNetLemmatizer()
 
@@ -401,54 +475,6 @@ def train_model_from_file(file_path):
 
     accuracy = hist.history['accuracy'][-1] * 100
     return logger.logs, accuracy
-
-@app.route('/segment_patterns', methods=['POST'])
-def segment_patterns():
-    data = request.json
-    segmented_data = segment_patterns_in_data(data)
-    return jsonify(segmented_data)
-
-def segment_patterns_in_data(data):
-    for intent in data['intents']:
-        if 'patterns' in intent:
-            segmented_patterns = [segment_word(pattern) for pattern in intent['patterns']]
-            intent['patterns'] = segmented_patterns
-    return data
-
-# Route to serve the login page
-@app.route('/login.html')
-def login_page():
-    return render_template('login.html')
-
-# Route to serve the settings page
-@app.route('/settings.html')
-def settings_page():
-    if not session.get('authenticated'):
-        return redirect(url_for('login_page'))
-    return render_template('settings.html')
-
-# Route to handle feedback submission
-@app.route('/feedback', methods=['POST'])
-def feedback():
-    feedback_data = request.json
-    feedback = feedback_data.get('feedback')
-    message_id = feedback_data.get('id')
-
-    with open(USER_INPUTS_FILE, 'r+', encoding='utf-8') as file:
-        user_inputs = json.load(file)
-        entry_found = False
-        for entry in user_inputs['user_inputs']:
-            if 'id' not in entry:
-                print(f"Entry without id: {entry}")
-            if entry['id'] == message_id:
-                entry['feedback'] = feedback
-                entry_found = True
-                break
-        if not entry_found:
-            print(f"No entry found with id: {message_id}")
-        file.seek(0)
-        json.dump(user_inputs, file, ensure_ascii=False, indent=4)
-    return jsonify({'status': 'success'})
 
 if __name__ == '__main__':
     app.run(debug=True)
