@@ -28,12 +28,13 @@ app = Flask(__name__)
 app.secret_key = 'your_secret_key'  # Required for session management
 CORS(app)
 
-# Firebase Admin SDK initialization
-cred = credentials.Certificate("/Users/pyiheinsan/Web_Chatbot/bottum-402e2-firebase-adminsdk-txgxn-0018efdfde.json")  # Replace with your service account key file path
-firebase_admin.initialize_app(cred, {
-    'storageBucket': 'gs://bottum-402e2.appspot.com'  # Replace with your Firebase project ID
-})
+# Load the Firebase credentials from an environment variable
+cred = credentials.Certificate(os.getenv('FIREBASE_CREDENTIALS_PATH'))
 
+# Initialize the Firebase app using the bucket stored in an environment variable
+firebase_admin.initialize_app(cred, {
+    'storageBucket': os.getenv('FIREBASE_STORAGE_BUCKET')
+})
 # Initialize Firestore and Firebase Storage
 db = firestore.client()
 bucket = storage.bucket()
