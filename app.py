@@ -15,6 +15,8 @@ from tensorflow.keras.optimizers import SGD
 from collections import OrderedDict
 from seg import segment_word
 from datetime import datetime
+from dotenv import load_dotenv
+
 
 # Firebase Admin SDK
 import firebase_admin

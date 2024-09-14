@@ -1,3 +1,4 @@
+
 # Ignore system files
 .DS_Store
 
@@ -35,3 +36,4 @@ bottum-402e2-firebase-adminsdk-txgxn-0018efdfde.json
 firebase.json
 firestore.indexes.json
 firestore.rules
+.env
