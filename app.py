@@ -23,35 +23,96 @@ from datetime import datetime
 import firebase_admin
 from firebase_admin import credentials, firestore, storage
 
-# Ensure NLTK data is downloaded
-nltk.download('punkt', quiet=True)
-nltk.download('wordnet', quiet=True)
+# Load environment variables
+load_dotenv()
 
+# Initialize Flask app
 app = Flask(__name__)
 app.secret_key = 'your_secret_key'  # Required for session management
 CORS(app)
 
-# Load the Firebase credentials from an environment variable
-cred = credentials.Certificate("/Users/pyiheinsan/Web_Chatbot/bottum-402e2-firebase-adminsdk-txgxn-0018efdfde.json")
+# Firebase credentials and storage setup
+firebase_cert = os.getenv('FIREBASE_CREDENTIALS')
+firebase_admin.initialize_app(
+    credentials.Certificate(firebase_cert),
+    {'storageBucket': os.getenv('FIREBASE_BUCKET_URL')}
+)
 
-# Initialize the Firebase app using the bucket stored in an environment variable
-firebase_admin.initialize_app(cred, {
-    'storageBucket': 'gs://bottum-402e2.appspot.com'
-})
 # Initialize Firestore and Firebase Storage
 db = firestore.client()
 bucket = storage.bucket()
 
+# Initialize NLTK data download
+def download_nltk_data():
+    """Download NLTK data at runtime if not already available."""
+    nltk_data_path = '/app/nltk_data'  # Path for Heroku deployment
+    if not os.path.exists(nltk_data_path):
+        os.makedirs(nltk_data_path)
+    nltk.data.path.append(nltk_data_path)
 
+    try:
+        nltk.data.find('tokenizers/punkt')
+    except LookupError:
+        nltk.download('punkt', download_dir=nltk_data_path)
 
-# Path to the JSON file for user credentials
-CREDENTIALS_FILE = 'credentials.json'
+    try:
+        nltk.data.find('corpora/wordnet')
+    except LookupError:
+        nltk.download('wordnet', download_dir=nltk_data_path)
+
+download_nltk_data()
 
 # Initialize the lemmatizer
 lemmatizer = WordNetLemmatizer()
 
-# Load the chatbot model, data, words, and classes
-model = load_model('chatbot_model.h5')
+# Download and load the model from Firebase Storage
+def download_model_from_firebase():
+    """Download the chatbot model from Firebase Storage."""
+    model_path = 'chatbot_model.h5'
+    blob = bucket.blob(f'models/{model_path}')
+
+    if not os.path.exists(model_path):
+        blob.download_to_filename(model_path)
+
+    model = load_model(model_path)
+    return model
+
+model = download_model_from_firebase()
+
+
+
+
+
+
+# # Ensure NLTK data is downloaded
+# nltk.download('punkt', quiet=True)
+# nltk.download('wordnet', quiet=True)
+
+# app = Flask(__name__)
+# app.secret_key = 'your_secret_key'  # Required for session management
+# CORS(app)
+
+# # Load the Firebase credentials from an environment variable
+# cred = credentials.Certificate("/Users/pyiheinsan/Web_Chatbot/bottum-402e2-firebase-adminsdk-txgxn-0018efdfde.json")
+
+# # Initialize the Firebase app using the bucket stored in an environment variable
+# firebase_admin.initialize_app(cred, {
+#     'storageBucket': 'gs://bottum-402e2.appspot.com'
+# })
+# # Initialize Firestore and Firebase Storage
+# db = firestore.client()
+# bucket = storage.bucket()
+
+
+
+# # Path to the JSON file for user credentials
+# CREDENTIALS_FILE = 'credentials.json'
+
+# # Initialize the lemmatizer
+# lemmatizer = WordNetLemmatizer()
+
+# # Load the chatbot model, data, words, and classes
+# model = load_model('chatbot_model.h5')
 
 # Compile the model if not already compiled
 model.compile(
