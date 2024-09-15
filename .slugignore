@@ -9,3 +9,4 @@ uploads/
 tests/
 __pycache__/
 *.pkl
+nltk_data/
