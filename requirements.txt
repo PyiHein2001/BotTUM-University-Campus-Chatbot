@@ -69,7 +69,7 @@ pandas==2.2.2
 patsy==0.5.6
 pillow==10.4.0
 proto-plus==1.24.0
-#protobuf>=3.19.0,<6.0.0
+protobuf>=3.19.0,<6.0.0
 pyasn1==0.6.1
 pyasn1_modules==0.4.1
 pycparser==2.22
@@ -96,7 +96,7 @@ statsmodels==0.14.2
 sympy==1.13.0
 tensorboard==2.16.2
 tensorboard-data-server==0.7.2
-tensorflow==2.16.2
+#tensorflow==2.16.2
 termcolor==2.4.0
 threadpoolctl==3.5.0
 torch==2.3.1
@@ -108,3 +108,5 @@ urllib3==2.2.2
 Werkzeug==3.0.3
 wheel==0.43.0
 wrapt==1.16.0
+
+tensorflow-cpu==2.16.2
