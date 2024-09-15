@@ -22,19 +22,19 @@ flatbuffers==24.3.25
 fonttools==4.53.1
 fsspec==2024.6.1
 gast==0.6.0
-google-api-core==2.19.2
+#google-api-core==2.19.2
 google-api-python-client==2.145.0
 google-auth==2.34.0
 google-auth-httplib2==0.2.0
 google-cloud-core==2.4.1
-google-cloud-firestore==2.18.0
+#google-cloud-firestore==2.18.0
 google-cloud-storage==2.18.2
 google-crc32c==1.6.0
 google-pasta==0.2.0
 google-resumable-media==2.7.2
 googleapis-common-protos==1.65.0
 grpcio==1.66.1
-grpcio-status==1.66.1
+#grpcio-status==1.66.1
 gunicorn==23.0.0
 h11==0.14.0
 h5py==3.11.0
@@ -69,7 +69,7 @@ pandas==2.2.2
 patsy==0.5.6
 pillow==10.4.0
 proto-plus==1.24.0
-protobuf>=3.19.0,<6.0.0
+#protobuf>=3.19.0,<6.0.0
 pyasn1==0.6.1
 pyasn1_modules==0.4.1
 pycparser==2.22
@@ -96,7 +96,7 @@ statsmodels==0.14.2
 sympy==1.13.0
 tensorboard==2.16.2
 tensorboard-data-server==0.7.2
-tensorflow==2.16.2
+#tensorflow==2.16.2
 termcolor==2.4.0
 threadpoolctl==3.5.0
 torch==2.3.1
@@ -108,3 +108,14 @@ urllib3==2.2.2
 Werkzeug==3.0.3
 wheel==0.43.0
 wrapt==1.16.0
+
+
+# Pin protobuf for tensorflow and let it manage its version
+protobuf>=3.20.3,<5.0.0
+tensorflow==2.16.2
+
+# Other dependencies
+google-api-core==2.19.2
+google-cloud-firestore==2.18.0
+grpcio-status==1.66.1
+
