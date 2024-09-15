@@ -1,5 +1,6 @@
 from flask import Flask, request, jsonify, render_template, redirect, url_for, session
 from flask_cors import CORS
+from dotenv import load_dotenv
 import json
 import os
 import uuid
@@ -15,7 +16,7 @@ from tensorflow.keras.optimizers import SGD
 from collections import OrderedDict
 from seg import segment_word
 from datetime import datetime
-from dotenv import load_dotenv
+
 
 
 # Firebase Admin SDK
@@ -31,11 +32,11 @@ app.secret_key = 'your_secret_key'  # Required for session management
 CORS(app)
 
 # Load the Firebase credentials from an environment variable
-cred = credentials.Certificate(os.getenv('FIREBASE_CREDENTIALS_PATH'))
+cred = credentials.Certificate("/Users/pyiheinsan/Web_Chatbot/bottum-402e2-firebase-adminsdk-txgxn-0018efdfde.json")
 
 # Initialize the Firebase app using the bucket stored in an environment variable
 firebase_admin.initialize_app(cred, {
-    'storageBucket': os.getenv('FIREBASE_STORAGE_BUCKET')
+    'storageBucket': 'gs://bottum-402e2.appspot.com'
 })
 # Initialize Firestore and Firebase Storage
 db = firestore.client()

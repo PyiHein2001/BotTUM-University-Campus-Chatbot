@@ -1,0 +1,11 @@
+*.log
+*.csv
+*.mp4
+*.mov
+*.zip
+*.h5
+glove.6B/
+uploads/
+tests/
+__pycache__/
+*.pkl
