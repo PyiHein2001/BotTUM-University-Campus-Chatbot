@@ -22,6 +22,13 @@ from datetime import datetime
 # Firebase Admin SDK
 import firebase_admin
 from firebase_admin import credentials, firestore, storage
+import nltk
+import os
+
+# Make sure the local path to nltk_data is correct
+nltk_data_path = os.path.join(os.path.dirname(__file__), 'nltk_data')
+nltk.data.path.append(nltk_data_path)
+
 
 # # Ensure NLTK data is downloaded
 # nltk.download('punkt', quiet=True)
